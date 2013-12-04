@@ -4,24 +4,42 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+# Variation configuration: starts with ELIFE_ to indicate these items
+# are for this setup.
+ELIFE_CONFIGURE_OPENVPN = 1         # set to 0 / false to disable OpenVPN configuration
+
+
+# Putting this code here, like this, means it is run whenever the Vagrant command
+# is run. At present I don't know of a way to make it more specific to, for example
+# 'up' or 'provision' commands.
+
 public_dir = "public"
 warnings = 0
-if !File.exist?(public_dir + "/client.crt")
-  puts "WARNING: Client VPN certificate client.crt is missing."
-  warnings = warnings + 1
+
+# These tests are needed if you are configuring OpenVPN
+if ELIFE_CONFIGURE_OPENVPN
+
+  if !File.exist?(public_dir + "/client.crt")
+    puts "WARNING: Client VPN certificate client.crt is missing."
+    warnings = warnings + 1
+  end
+  if !File.exist?(public_dir + "/client.key")
+    puts "WARNING: Client VPN key client.key is missing."
+    warnings = warnings + 1
+  end
+  if !File.exist?(public_dir + "/ca.crt")
+    puts "WARNING: Client Authority certificate ca.crt is missing."
+    warnings = warnings + 1
+  end
+  if !File.exist?(public_dir + "/ta.key")
+    puts "WARNING: Client TLS key ta.key is missing."
+    warnings = warnings + 1
+  end
+
 end
-if !File.exist?(public_dir + "/client.key")
-  puts "WARNING: Client VPN key client.key is missing."
-  warnings = warnings + 1
-end
-if !File.exist?(public_dir + "/ca.crt")
-  puts "WARNING: Client Authority certificate ca.crt is missing."
-  warnings = warnings + 1
-end
-if !File.exist?(public_dir + "/ta.key")
-  puts "WARNING: Client TLS key ta.key is missing."
-  warnings = warnings + 1
-end
+
+# These tests are needed to run up the Drupal site.
+
 if !File.exist?(public_dir + "/jnl_elife.sql.gz")
   puts "WARNING: Website database dump jnl_elife.sql.gz is missing."
   warnings = warnings + 1
@@ -30,6 +48,8 @@ if !File.exist?(public_dir + "/settings.php")
   puts "WARNING: Website settings file settings.php is missing."
   warnings = warnings + 1
 end
+
+# If there is a problem, let the user have a chance to fix it
 if warnings > 0
   print "\nWarnings have been issued: abort this command? [Yes/No] "
   $stdout.flush
@@ -138,9 +158,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # site and SQL files for our Drupal site
     chef.add_recipe "drupal-site-jnl-elife-cookbook::default"
 
-    # moved here from drupal-site-jnl-elife default recipe so that it can
-    # be commented out at need:
-    chef.add_recipe  "drupal-site-jnl-elife-cookbook::openvpnc"
+    if ELIFE_CONFIGURE_OPENVPN
+      # moved here from drupal-site-jnl-elife default recipe so that it can
+      # be commented out at need:
+      chef.add_recipe  "drupal-site-jnl-elife-cookbook::openvpnc"
+    end
 
     # Pulled out so it's obvious: disable content delivery as it won't work for non-live sites
     # apache restart needed before this works and restarts are delayed by default. Change
