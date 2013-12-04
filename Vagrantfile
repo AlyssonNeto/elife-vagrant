@@ -4,6 +4,40 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+public_dir = "public"
+warnings = 0
+if !File.exist?(public_dir + "/client.crt")
+  puts "WARNING: Client VPN certificate client.crt is missing."
+  warnings = warnings + 1
+end
+if !File.exist?(public_dir + "/client.key")
+  puts "WARNING: Client VPN key client.key is missing."
+  warnings = warnings + 1
+end
+if !File.exist?(public_dir + "/ca.crt")
+  puts "WARNING: Client Authority certificate ca.crt is missing."
+  warnings = warnings + 1
+end
+if !File.exist?(public_dir + "/ta.key")
+  puts "WARNING: Client TLS key ta.key is missing."
+  warnings = warnings + 1
+end
+if !File.exist?(public_dir + "/jnl_elife.sql.gz")
+  puts "WARNING: Website database dump jnl_elife.sql.gz is missing."
+  warnings = warnings + 1
+end
+if !File.exist?(public_dir + "/settings.php")
+  puts "WARNING: Website settings file settings.php is missing."
+  warnings = warnings + 1
+end
+if warnings > 0
+  print "\nWarnings have been issued: abort this command? [Yes/No] "
+  $stdout.flush
+  $ans = gets.chomp.strip
+  abort unless ($ans == "no" || $ans == "No")
+end
+
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
