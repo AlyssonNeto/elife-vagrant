@@ -1,21 +1,68 @@
 # About
 
-This repo contains the provisioning information for setting up a dev environment for building a local
-copy of [drupal-site-jnl-elife](https://github.com/elifesciences/drupal-site-jnl-elife).
-
-It is being built on top of the [drupal - vagrant project](https://drupal.org/project/vagrant), with the
-configuration moved to v2 of the vagrant API, and using librarian and chef for managing cookbooks.
+This repo contains provisioning information for configuring a dev environment 
+of [drupal-site-jnl-elife](https://github.com/elifesciences/drupal-site-jnl-elife).
 
 # Preqrequisites:
 
-Git on local host
-Git user created and with access to the elifesciences repository
-Vagrant 1.3.4 or 1.3.5 installed
-VirtualBox v4.2 or 4.3 installed (needed for shared folders)
+* Git installed on host, Github account with your public key attached
+* [ssh-agent](#ssh-agent)
+* Vagrant >= v1.3.4
+* VirtualBox >= v4.2 (needed for shared folders)
+* [database dump](#dbdump)
+* [VPN credentials](#openvpn)
 
-  - Use of VirtualBox 4.3 requires Vagrant 1.3.5
+## <a name="ssh-agent">ssh-agent</a>
 
-Tunnelblick installed on the host (Required for local VM access to VPN servers, not used by AWS)
+Ignore if using a mac. OSX, since Leopard, has had this 
+[integrated by default](http://en.wikipedia.org/wiki/Ssh-agent#Status_on_Mac_OS_X).
+
+In order for the provisioner to connect to private repositories, it uses the 
+program `ssh-agent`. If `ssh-agent` is absent or is missing your private key, it 
+will fail with a "permission denied" type error.
+
+On Linux, install `ssh-agent` with your distribution's package manager, ensure
+`eval $(ssh-agent)` is in your `~/.bashrc` or the system's `/etc/profile` and 
+then add your private key with `ssh-add`. 
+More details [here](https://wiki.archlinux.org/index.php/SSH_keys#ssh-agent).
+
+## <a name="dbdump">database dump</a>
+
+A dump of the eLife's drupal database must exist to be loaded. The raw dump is
+quite large (~1.3GB at time of writing) however a smaller version is available.
+
+Directions using an unpacked + sanitized version of the database can be 
+[found here](https://github.com/elifesciences/drupal-site-jnl-elife-db).
+
+## <a name="openvpn">OpenVPN</a>
+
+OpenVPN is currently _NOT_ configured with salt provisioning.
+
+If running with AWS you will need an OpenVPN session. You need 4 files, which 
+you should obtain from Highwire and are specific to you:
+
+ - client.key
+ - client.crt
+ - ca.crt
+ - ta.key
+
+These files are used to identify one VPN session: you cannot connect from more 
+than one machine (local or remote, VM or otherwise) at a time. The only 
+exception is that a tunnelblick session run on a Mac can be used by things 
+running on that Mac, whether in a VM or not.
+
+The keys must be in the elife-vagrant/public folder when you provision the VM, 
+so at first when you do a vagrant up and later if you do a vagrant provision. 
+They do not need to be there otherwise, as the keys are copied onto VM-local 
+disk (in /etc/openvpn).
+
+Configuration of the VM is controlled by drupal-site-jnl-elife-cookbook:recipes/openvpnc.rb
+
+## <a name="settings">`settings.php`</a>
+
+...
+
+## AWS access
 
 AWS access requires two vagrant plugins to be installed:
 
@@ -26,6 +73,7 @@ Install these using:
 
 	vagrant plugin install vagrant-aws
 	vagrant plugin install vagrant-omnibus
+
 
 # Setup
 

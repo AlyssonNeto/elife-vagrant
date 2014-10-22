@@ -1,0 +1,2 @@
+# this is the minion config file. the master config file, if there is a master, is called 'master'
+file_client: local # tells the salt-call program not to contact the master

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -8,6 +9,8 @@ VAGRANTFILE_API_VERSION = "2"
 # are for this setup.
 ELIFE_CONFIGURE_OPENVPN = true         # set to false to disable OpenVPN configuration
 
+# use :chef to switch back to original provisioning
+PROVISIONER = :salt
 
 # Putting this code here, like this, means it is run whenever the Vagrant command
 # is run. At present I don't know of a way to make it more specific to, for example
@@ -16,6 +19,7 @@ ELIFE_CONFIGURE_OPENVPN = true         # set to false to disable OpenVPN configu
 public_dir = "public"
 warnings = 0
 
+=begin
 # These tests are needed if you are configuring OpenVPN
 if ELIFE_CONFIGURE_OPENVPN
 
@@ -56,7 +60,7 @@ if warnings > 0
   ans = STDIN.gets.chomp.strip
   abort unless (ans === "no" || ans === "No")
 end
-
+=end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
@@ -79,8 +83,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   # This setting is global to the file; select dummy for AWS otherwise select pre64..
-  config.vm.box = "pre64-elife-rb1.9-chef-11"
-  config.vm.box_url = "http://cdn.elifesciences.org/vm/pre64-elife-rb1.9-chef-11.box"
+  #config.vm.box = "pre64-elife-rb1.9-chef-11"
+  config.vm.box = "ubuntu/trusty64"
+  #config.vm.box_url = "http://cdn.elifesciences.org/vm/pre64-elife-rb1.9-chef-11.box"
+
+  config.vm.host_name = 'elife.vbox.local'
+  config.vm.network :forwarded_port, host: 4567, guest: 80
 
 # # # # # # # # # # # # # # # # # #
 
@@ -140,62 +148,84 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end    # of vbox provider
 
 # # # # # # # # # # # # # # # # # #
+  if false then
+    puts "skipping provisioning"
 
-  config.vm.provision "chef_solo" do |chef|
+  elsif PROVISIONER == :salt then
+  
+    # ensures the SSH_AUTH_SOCK envvar is retained when salt sudos to root
+    # this allows the root user to talk to private git repos
+    config.vm.provision "shell", inline: "echo 'Defaults>root env_keep+=SSH_AUTH_SOCK' > /etc/sudoers.d/00-ssh-auth-sock-root"
+  
+    puts "provisioned with SALT"
+    config.vm.synced_folder "salt/root/", "/srv/salt/"
+    config.vm.synced_folder "salt/pillar/", "/srv/pillar/"
 
-    # define where things have been collected together by librarian-chef
-    chef.cookbooks_path = ["cookbooks"]
+    config.vm.provision :salt do |salt|
+      salt.verbose = true
+      salt.install_type = "git"
+      salt.minion_config = "salt/minion"
+      salt.run_highstate = true
+    end
 
-    # Set this to :debug if you want more debugging info, else :info or :warn
-    chef.log_level = :info
+  else
+    config.vm.provision "chef_solo" do |chef|
+      puts "provisioned with CHEF"
+      # define where things have been collected together by librarian-chef
+      chef.cookbooks_path = ["cookbooks"]
 
-    # this installs most of the infrastrucutre required to support a drupal instance
-    chef.add_recipe "apt" # add this so we have updated packages available
-    chef.add_recipe "git"
+      # Set this to :debug if you want more debugging info, else :info or :warn
+      chef.log_level = :info
 
-    # This represents our default Drupal development stack.
-    chef.add_recipe "elife-drupal-cookbook::drupal_lamp_dev"
+      # this installs most of the infrastrucutre required to support a drupal instance
+      chef.add_recipe "apt" # add this so we have updated packages available
+      chef.add_recipe "git"
 
-    # site and SQL files for our Drupal site
-    chef.add_recipe "drupal-site-jnl-elife-cookbook::default"
+      # This represents our default Drupal development stack.
+      chef.add_recipe "elife-drupal-cookbook::drupal_lamp_dev"
 
-    # Pulled out so it's obvious: disable content delivery as it won't work for non-live sites
-    # apache restart needed before this works and restarts are delayed by default. Change
-    # the web_app rule to change this behaviour:
-    chef.add_recipe "drupal-site-jnl-elife-cookbook::disable-cdn"
+      # site and SQL files for our Drupal site
+      chef.add_recipe "drupal-site-jnl-elife-cookbook::default"
 
-    # we set these attrbutes, and in particular the mysql root password
-    # as in chef solo we don't have access to a chef server
-    chef.json = {
-      "git_root" => "/opt/public",                # directory containing webroot in which drupal repos fetched
-      "www_root" => "/opt/public/drupal-webroot", # location of drupal webroot. Not really configurable!
-                                                  # because dir is git_root and name is the drupal-webroot git
-                                                  # repo folder name.
-      "apache" => {
-        "listen_ports" => [ "80", "8080" ],         # list of ports to listen on, e.g. [ "80", "8080"]
-      },
-      "drupal" => {
-        "site_name" => "elife.vbox.local",        # a single name by which the server is known
-        "site_aliases" => [],                     # used in web_app recipe, alternate names for server
-        "shared_folder" => "/vagrant/public",     # in-VM folder used to mount .../elife-vagrant/public
-        "drupal_sqlfile" => "jnl-elife.sql",      # Base filename of SQL database dump. gzip compressed as ".gz"
-      },
-      "mysql" => {
-        "server_database" => "jnl_elife",         # the name of the database. Must match settings.php
-        "server_root_userid" => "admin",          # database admin userid
-        "server_root_password" => "admin",        # database admin password
-        "server_repl_password" => "",             # ... not used
-        "server_debian_password" => "root",       # ... not used
-        "elife_user_password" => "elife",         # ... not used
-      },
-      "elifejnl" => {
-        # revision of highwire module to fetch: 7.x-1.x-stable is prod;  7.x-1.x-dev is dev (not for eLife use)
-        "hiwire_rev" => "7.x-1.x-stable",
-        "webroot_rev" => "7.x-1.x-stable",
-        "setup_vpn_client" => ELIFE_CONFIGURE_OPENVPN
+      # Pulled out so it's obvious: disable content delivery as it won't work for non-live sites
+      # apache restart needed before this works and restarts are delayed by default. Change
+      # the web_app rule to change this behaviour:
+      chef.add_recipe "drupal-site-jnl-elife-cookbook::disable-cdn"
+
+      # we set these attrbutes, and in particular the mysql root password
+      # as in chef solo we don't have access to a chef server
+      chef.json = {
+        "git_root" => "/opt/public",                # directory containing webroot in which drupal repos fetched
+        "www_root" => "/opt/public/drupal-webroot", # location of drupal webroot. Not really configurable!
+                                                    # because dir is git_root and name is the drupal-webroot git
+                                                    # repo folder name.
+        "apache" => {
+          "listen_ports" => [ "80", "8080" ],         # list of ports to listen on, e.g. [ "80", "8080"]
+        },
+        "drupal" => {
+          "site_name" => "elife.vbox.local",        # a single name by which the server is known
+          "site_aliases" => [],                     # used in web_app recipe, alternate names for server
+          "shared_folder" => "/vagrant/public",     # in-VM folder used to mount .../elife-vagrant/public
+          "drupal_sqlfile" => "jnl-elife.sql",      # Base filename of SQL database dump. gzip compressed as ".gz"
+        },
+        "mysql" => {
+          "server_database" => "jnl_elife",         # the name of the database. Must match settings.php
+          "server_root_userid" => "admin",          # database admin userid
+          "server_root_password" => "admin",        # database admin password
+          "server_repl_password" => "",             # ... not used
+          "server_debian_password" => "root",       # ... not used
+          "elife_user_password" => "elife",         # ... not used
+        },
+        "elifejnl" => {
+          # revision of highwire module to fetch: 7.x-1.x-stable is prod;  7.x-1.x-dev is dev (not for eLife use)
+          "hiwire_rev" => "7.x-1.x-stable",
+          "webroot_rev" => "7.x-1.x-stable",
+          "setup_vpn_client" => ELIFE_CONFIGURE_OPENVPN
+        }
       }
-    }
 
-  end   # of chef_solo provision
+    end   # of chef_solo provision
+
+  end # end provisioning switching
 
 end

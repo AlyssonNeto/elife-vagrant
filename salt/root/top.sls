@@ -1,0 +1,5 @@
+base:
+  '*':
+    - system
+    - drush
+    - elife

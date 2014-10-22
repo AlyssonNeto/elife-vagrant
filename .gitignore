@@ -1,0 +1,4 @@
+.vagrant/*
+public/drupal-webroot/
+public/drupal-highwire/
+*.sql
