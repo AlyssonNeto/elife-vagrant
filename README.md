@@ -3,14 +3,31 @@
 This repo contains provisioning information for configuring a dev environment 
 of [drupal-site-jnl-elife](https://github.com/elifesciences/drupal-site-jnl-elife).
 
+# TL;DR
+
+* $ ./jnl preinstall
+* copy your settings.py to public/
+* copy journal dump as .sql to salt/root/elife/
+* # echo '127.0.0.1  elife.vbox.local' >> /etc/hosts
+* vagrant up
+* firefox elife.vbox.local
+
 # Preqrequisites:
 
 * Git installed on host, Github account with your public key attached
+* drupal-webroot and drupal-highwire checkouts
 * ssh-agent
 * Vagrant >= v1.3.4
 * VirtualBox >= v4.2 (needed for shared folders)
 * database dump
 * OpenVPN & VPN credentials
+
+## drupal-webroot and drupal-highwire
+
+Two repositories, `drupal-webroot` and `drupal-highwire` should exist in the 
+parent directory. These can be cloned with the command:
+
+    $ ./jnl preinstall
 
 ## ssh-agent
 

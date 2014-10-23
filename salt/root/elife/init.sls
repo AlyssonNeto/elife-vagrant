@@ -109,3 +109,10 @@ load-mysql-db:
             - mysql_grants: mysql-root-user
             - mysql_database: elife-db
 
+# DRUSH COMMANDS
+
+disable-cdn:
+    cmd.run:
+        - name: /usr/bin/drush -l 'elife.vbox.local' -r '/opt/public/drupal-webroot' --yes pm-disable cdn
+
+
