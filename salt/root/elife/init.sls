@@ -5,8 +5,7 @@ drupal-webroot:
   git.latest:
     - name: git@github.com:elifesciences/drupal-webroot.git
     - target: /opt/public/drupal-webroot
-    - rev: 7.x-1.x-dev 
-    #- user: vagrant
+    - rev: 7.x-1.x-dev
     - require:
       - pkg: system
 
@@ -23,7 +22,7 @@ drupal-webroot:
     - require:
       - git: drupal-webroot
       - pkg: system # apache and it's user must exist
-      
+
 modules-link:
   file.symlink:
     - name: /opt/public/drupal-webroot/sites/default/modules
@@ -56,7 +55,6 @@ drupal-highwire:
     - name: git@github.com:elifesciences/drupal-highwire.git
     - target: /opt/public/drupal-highwire
     - rev: 7.x-1.x-dev
-    #- user: vagrant
     - require:
       - pkg: system
 
@@ -73,7 +71,6 @@ drupal-highwire:
     - require:
       - git: drupal-highwire
       - pkg: system # apache and it's user must exist
-
 
 elife-files:
   file.directory:

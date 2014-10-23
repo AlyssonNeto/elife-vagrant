@@ -5,18 +5,20 @@
 system:
     pkg.installed:
         - pkgs:
+            - curl
             - git
             - python-pip
-            - php5
-            - php5-mysql
             - mysql-client
             - mysql-server
             - apache2
             - zip # also provides 'unzip'
             - openvpn
             - python-mysqldb
-#            - phpmyadmin
-#            - memcached
+            - phpmyadmin # not configured
+            - memcached
+            - elinks
+            - vim
+
     # any python requirements we want installed globally 
     # that are not available as a package
     pip.installed:
@@ -41,55 +43,86 @@ ssh-well-known-hosts:
         # https://help.github.com/articles/what-ip-addresses-does-github-use-that-i-should-whitelist
         github.com,gist.github.com,192.30.252.0/22 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 
-# PHP
-
-php-ini:
-    file.managed:
-        - name: /etc/php5/apache2/php.ini
-        - source: salt://system/php.ini
-        - require:
-            - pkg: system
 
 # WEBSERVER
 
 apache2:
+    file.managed:
+        - name: /etc/apache2/apache2.conf
+        - source: salt://system/etc-apache2-apache2.conf
+        - require:
+            - pkg: system
+
     service:
         - running
         - require: 
             - pkg: system
 
-/etc/apache2/mods-enabled/rewrite.load:
-    file.symlink:
-        - target: /etc/apache2/mods-available/rewrite.load
-        - require:
-            - pkg: system
+a2enmod rewrite expires:
+    cmd.run:
+        - watch_in:
+            - service: apache2
+
+a2dissite 000-default:
+    cmd.run:
         - watch_in:
             - service: apache2
 
 # DATABASE
 
 mysql:
-    service:
-        - running
+    file.managed:
+        - name: /etc/mysql/my.cnf
+        - source: salt://system/etc-mysql-my.cnf
         - require:
             - pkg: system
+
+    service.running:
+        - require:
+            - pkg: system
+        - watch:
+            - file: mysql
 
 mysql-root-user:
     mysql_user.present:
         - name: admin
         - password: admin
         - require:
-          - service: mysql
+            - service: mysql
+
     mysql_grants.present:
         - user: admin
         - grant: all privileges
         - database: "*.*"
         - require:
-          - service: mysql
+            - service: mysql
+
+# MEMCACHED
+
+memcached-config:
+    file.managed:
+        - name: /etc/memcached.conf
+        - source: salt://system/etc-memcached.conf
+        - require:
+            - pkg: system
+
 # OPENVPN
 
 openvpn:
-    service:
-        - running
+    file.managed:
+        - name: /etc/openvpn/client.conf
+        - source: salt://system/etc-openvpn-client.conf
         - require:
             - pkg: system
+        
+    service.running:
+        - watch:
+            - file: openvpn
+
+            
+vpn-files:
+    file.recurse:
+        - name: /etc/openvpn/
+        - source: salt://system/openvpn-credentials/
+        - watch_in:
+            - service: openvpn

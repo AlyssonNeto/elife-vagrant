@@ -2,3 +2,4 @@
 public/drupal-webroot/
 public/drupal-highwire/
 *.sql
+salt/root/system/openvpn-credentials/*

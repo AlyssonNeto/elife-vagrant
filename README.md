@@ -6,13 +6,13 @@ of [drupal-site-jnl-elife](https://github.com/elifesciences/drupal-site-jnl-elif
 # Preqrequisites:
 
 * Git installed on host, Github account with your public key attached
-* [ssh-agent](#ssh-agent)
+* ssh-agent
 * Vagrant >= v1.3.4
 * VirtualBox >= v4.2 (needed for shared folders)
-* [database dump](#dbdump)
-* [VPN credentials](#openvpn)
+* database dump
+* OpenVPN & VPN credentials
 
-## <a name="ssh-agent">ssh-agent</a>
+## ssh-agent
 
 Ignore if using a mac. OSX, since Leopard, has had this 
 [integrated by default](http://en.wikipedia.org/wiki/Ssh-agent#Status_on_Mac_OS_X).
@@ -26,7 +26,7 @@ On Linux, install `ssh-agent` with your distribution's package manager, ensure
 then add your private key with `ssh-add`. 
 More details [here](https://wiki.archlinux.org/index.php/SSH_keys#ssh-agent).
 
-## <a name="dbdump">database dump</a>
+## database dump
 
 A dump of the eLife's drupal database must exist to be loaded. The raw dump is
 quite large (~1.3GB at time of writing) however a smaller version is available.
@@ -34,7 +34,7 @@ quite large (~1.3GB at time of writing) however a smaller version is available.
 Directions using an unpacked + sanitized version of the database can be 
 [found here](https://github.com/elifesciences/drupal-site-jnl-elife-db).
 
-## <a name="openvpn">OpenVPN</a>
+## OpenVPN
 
 OpenVPN is currently _NOT_ configured with salt provisioning.
 
@@ -58,7 +58,7 @@ disk (in /etc/openvpn).
 
 Configuration of the VM is controlled by drupal-site-jnl-elife-cookbook:recipes/openvpnc.rb
 
-## <a name="settings">`settings.php`</a>
+## settings.php
 
 ...
 
