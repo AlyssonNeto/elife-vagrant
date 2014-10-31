@@ -2,10 +2,10 @@
 # FILES
 
 drupal-webroot:
-  git.latest:
+  git.present:
     - name: git@github.com:elifesciences/drupal-webroot.git
     - target: /opt/public/drupal-webroot
-    - rev: 7.x-1.x-dev
+    - rev: 7.x-1.x-stable
     - require:
       - pkg: system
 
@@ -51,10 +51,10 @@ settings-link:
       - file: drupal-webroot
 
 drupal-highwire:
-  git.latest:
+  git.present:
     - name: git@github.com:elifesciences/drupal-highwire.git
     - target: /opt/public/drupal-highwire
-    - rev: 7.x-1.x-dev
+    - rev: 7.x-1.x-stable
     - require:
       - pkg: system
 
@@ -103,7 +103,8 @@ elife-db:
 
 load-mysql-db:
     cmd.run:
-        - name: mysql -u admin -padmin jnl_elife < /srv/salt/elife/jnl-elife.sql
+        - name: mysql -u admin -padmin jnl_elife < /opt/public/jnl-elife.sql
+        - creates: /opt/public/journal-loaded.lock
         - require:
             - mysql_user: mysql-root-user
             - mysql_grants: mysql-root-user
