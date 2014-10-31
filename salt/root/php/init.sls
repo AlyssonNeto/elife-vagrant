@@ -17,6 +17,7 @@ php-packages:
 php-ini:
     file.managed:
         - name: /etc/php5/apache2/php.ini
+        - backup: minion
         - source: salt://system/etc-php5-apache2-php.ini
         - require:
             - pkg: php-packages

@@ -1,8 +1,9 @@
 
 # FILES
 
+{% if not salt['file.directory_exists']('/opt/public/drupal-webroot') %}
 drupal-webroot:
-  git.present:
+  git.latest:
     - name: git@github.com:elifesciences/drupal-webroot.git
     - target: /opt/public/drupal-webroot
     - rev: 7.x-1.x-stable
@@ -50,8 +51,12 @@ settings-link:
     - require:
       - file: drupal-webroot
 
+{% endif %}
+
+
+{% if not salt['file.directory_exists']('/opt/public/drupal-highwire') %}
 drupal-highwire:
-  git.present:
+  git.latest:
     - name: git@github.com:elifesciences/drupal-highwire.git
     - target: /opt/public/drupal-highwire
     - rev: 7.x-1.x-stable
@@ -71,6 +76,8 @@ drupal-highwire:
     - require:
       - git: drupal-highwire
       - pkg: system # apache and it's user must exist
+
+{% endif %}
 
 elife-files:
   file.directory:
@@ -103,8 +110,9 @@ elife-db:
 
 load-mysql-db:
     cmd.run:
-        - name: mysql -u admin -padmin jnl_elife < /opt/public/jnl-elife.sql
-        - creates: /opt/public/journal-loaded.lock
+        - name: mysql -u admin -padmin jnl_elife < /opt/public/jnl-elife.sql && touch /root/journal-loaded.lock
+        - creates: 
+          - /root/journal-loaded.lock
         - require:
             - mysql_user: mysql-root-user
             - mysql_grants: mysql-root-user

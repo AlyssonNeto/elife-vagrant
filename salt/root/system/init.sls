@@ -28,7 +28,7 @@ system:
 
 # SSH known hosts
 
-# the `ssh_known_hosts` is currently lacking global options.
+# the `ssh_known_hosts` state is currently lacking global options.
 # https://github.com/saltstack/salt/issues/6878
 ssh-well-known-hosts:
   file.managed:
@@ -114,15 +114,42 @@ openvpn:
         - source: salt://system/etc-openvpn-client.conf
         - require:
             - pkg: system
-        
+
+    {% if pillar.vpn.enabled %}
     service.running:
         - watch:
             - file: openvpn
+    {% else %}
+    service:
+      - dead
+    {% endif %}
 
-            
-vpn-files:
-    file.recurse:
-        - name: /etc/openvpn/
-        - source: salt://system/openvpn-credentials/
+{% if pillar.vpn.enabled %}
+vpn-client-certificate:
+    file.copy:
+        - name: /etc/openvpn/client.crt
+        - source: /opt/public/client.crt
         - watch_in:
             - service: openvpn
+
+vpn-client-authority:
+    file.copy:
+        - name: /etc/openvpn/ca.crt
+        - source: /opt/public/ca.crt
+        - watch_in:
+            - service: openvpn
+
+vpn-client-key:
+    file.copy:
+        - name: /etc/openvpn/client.key
+        - source: /opt/public/client.key
+        - watch_in:
+            - service: openvpn
+
+vpn-shared-secret:
+    file.copy:
+        - name: /etc/openvpn/ta.key
+        - source: /opt/public/ta.key
+        - watch_in:
+            - service: openvpn
+{% endif %}

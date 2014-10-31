@@ -1,5 +1,3 @@
 .vagrant/*
-public/drupal-webroot/
-public/drupal-highwire/
+public/*
 *.sql
-salt/root/system/openvpn-credentials/*
