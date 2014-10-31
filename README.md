@@ -31,16 +31,25 @@ parent directory. These can be cloned with the command:
 
 ## ssh-agent
 
-Ignore if using a mac. OSX, since Leopard, has had this 
-[integrated by default](http://en.wikipedia.org/wiki/Ssh-agent#Status_on_Mac_OS_X).
+_note:_ OSX has had this [integrated by default](http://en.wikipedia.org/wiki/Ssh-agent#Status_on_Mac_OS_X)
+since Leopard, apparently, but problems are still being encountered.
 
 In order for the provisioner to connect to private repositories, it uses the 
 program `ssh-agent`. If `ssh-agent` is absent or is missing your private key, it 
 will fail with a "permission denied" type error.
 
-On Linux, install `ssh-agent` with your distribution's package manager, ensure
-`eval $(ssh-agent)` is in your `~/.bashrc` or the system's `/etc/profile` and 
-then add your private key with `ssh-add`. 
+On Linux, install `ssh-agent` with your distribution's package manager.
+
+Add this to the end of your `~/.bashrc` or to the system's `/etc/profile` file:
+
+    eval $(ssh-agent)
+    ssh-add
+    
+If you use a key other than the default to connect, you can add that key 
+specifically with:
+
+    ssh-add /path/to/other/private-key
+
 More details [here](https://wiki.archlinux.org/index.php/SSH_keys#ssh-agent).
 
 ## database dump
