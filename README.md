@@ -6,7 +6,7 @@ of [drupal-site-jnl-elife](https://github.com/elifesciences/drupal-site-jnl-elif
 # TL;DR
 
 * $ ./jnl preinstall
-* copy your settings.py to public/
+* copy your settings.php to public/
 * copy journal dump as .sql to salt/root/elife/
 * # echo '127.0.0.1  elife.vbox.local' >> /etc/hosts
 * vagrant up
