@@ -134,6 +134,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :salt do |salt|
     salt.verbose = true
     salt.install_type = "git"
+    salt.install_args = "v2014.7"
     salt.minion_config = "salt/minion"
     salt.run_highstate = true
     salt.pillar({
