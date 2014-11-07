@@ -1,3 +1,8 @@
 .vagrant/*
 public/*
 *.sql
+
+/.idea/
+/Cheffile.lock
+/cookbooks/
+/tmp/
