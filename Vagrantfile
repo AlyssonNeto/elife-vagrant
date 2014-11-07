@@ -23,13 +23,13 @@ VM_CPUS = 1
 
 # AWS options
 
-AWS_AMI = "ami-de0d9eb7"  # TODO: what sort of box is this? should be the same/similar to VM_BOX
+AWS_AMI = "ami-98aa1cf0"  # ubuntu/images/ebs-ssd/ubuntu-trusty-14.04-amd64-server-20140927
 AWS_REGION = "us-east-1"
 AWS_ACCESS_KEY = ENV['AWS_KEY_ID']
 AWS_SECRET_KEY = ENV['AWS_SECRET_KEY']
 AWS_KEYPAIR_NAME = ENV['AWS_KEYPAIR_NAME']
 AWS_PRIVATE_KEY_PATH = ENV['AWS_KEY_PATH']
-AWS_INSTANCE_TYPE = "m1.large"
+AWS_INSTANCE_TYPE = "m1.small"
 
 # environment options
 
