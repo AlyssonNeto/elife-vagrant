@@ -1,6 +1,7 @@
 .vagrant/*
 public/*
 *.sql
+*~
 
 /.idea/
 /Cheffile.lock

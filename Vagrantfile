@@ -17,9 +17,9 @@ VM_BOX = "ubuntu/trusty64"
 VM_GUI = false
 
 VM_IP = "192.168.33.44"
-VM_RAM = "1024"
-VM_VIDEO_RAM = "12" # TODO: 12 what??
-VM_CPUS = 1
+VM_RAM = "4096"
+VM_VIDEO_RAM = "12" # TODO: only applicable when running a gui
+VM_CPUS = 4
 
 # AWS options
 
@@ -33,7 +33,8 @@ AWS_INSTANCE_TYPE = "m1.small"
 
 # environment options
 
-VPN_ENABLED = true
+VPN_ENABLED = false
+FILE_CHECKS = false
 
 #
 # 
@@ -68,7 +69,7 @@ file_checks.each do |fname|
   end
 end
 
-if warnings > 0
+if warnings > 0 and FILE_CHECKS
   print "\nWarnings have been issued: continue? [yes/No] "
   STDOUT.flush
   ans = STDIN.gets.chomp.strip.downcase
@@ -96,9 +97,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider :aws do |aws, override|
     override.vm.box = "dummy"
     override.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
-
-    # Install latest version of Chef
-    override.omnibus.chef_version = :latest
 
     aws.access_key_id = AWS_ACCESS_KEY
     aws.secret_access_key = AWS_SECRET_KEY
