@@ -10,6 +10,7 @@ system:
             - python-pip
             - mysql-client
             - mysql-server
+            - make
             - apache2
             - zip # also provides 'unzip'
             - openvpn
@@ -19,7 +20,7 @@ system:
             - elinks
             - vim
 
-    # any python requirements we want installed globally 
+    # any python requirements we want installed globally
     # that are not available as a package
     pip.installed:
         - requirements: salt://system/requirements.txt
@@ -121,7 +122,7 @@ openvpn:
             - file: openvpn
     {% else %}
     service:
-      - dead
+        - dead
     {% endif %}
 
 {% if pillar.vpn.enabled %}
