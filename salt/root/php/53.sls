@@ -66,7 +66,7 @@ post-5.3-install:
             update-alternatives --install /usr/bin/php           php /root/.phpbrew/php/php-5.3.29/bin/php        60
             update-alternatives --install /usr/bin/phpize        phpize /root/.phpbrew/php/php-5.3.29/bin/phpize     60
             update-alternatives --install /usr/bin/php-config    php-config /root/.phpbrew/php/php-5.3.29/bin/php-config 60
-#           update-alternatives --install /usr/bin/php5-cgi      php5-cgi /root/.phpbrew/php/php-5.3.29/bin/php-cgi    60
+            update-alternatives --install /usr/bin/php5-cgi      php5-cgi /root/.phpbrew/php/php-5.3.29/bin/php-cgi    60
             chmod a+rX /root/ /root/.phpbrew /root/.phpbrew/php /root/.phpbrew/php/php-5.3.29 
             chmod a+rx /root/.phpbrew/php/php-5.3.29/bin/* 
         - requires:
