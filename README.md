@@ -17,7 +17,7 @@ of [drupal-site-jnl-elife](https://github.com/elifesciences/drupal-site-jnl-elif
 * Git installed on host, Github account with your public key attached
 * drupal-webroot and drupal-highwire checkouts
 * ssh-agent
-* Vagrant >= v1.3.4 (known to not work with 1.2.7)
+* Vagrant >= v1.6.5 (known to not work with 1.3.4)
 * VirtualBox >= v4.2 (needed for shared folders)
 * database dump
 * OpenVPN & VPN credentials
