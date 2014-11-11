@@ -21,6 +21,8 @@ php-ini:
         - source: salt://system/etc-php5-apache2-php.ini
         - require:
             - pkg: php-packages
+        - watch_in:
+            - service: apache2
 
 a2enmod php5:
     cmd.run:
