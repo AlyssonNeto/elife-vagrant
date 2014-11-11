@@ -14,7 +14,7 @@ drupal-webroot:
     - name: /opt/public/drupal-webroot
     - user: www-data
     - group: www-data
-    - dir_mode: 775 # www-data user has less privileges than the group-owner.
+    - dir_mode: 775
     - file_mode: 664
     - recurse:
       - user
@@ -82,7 +82,7 @@ drupal-highwire:
 elife-files:
   file.directory:
     - name: /opt/public/drupal-webroot/sites/default/files
-    - file_mode: 777
+    - file_mode: 777 # write but not execute
 
 # VHOST
 
