@@ -123,5 +123,6 @@ load-mysql-db:
 disable-cdn:
     cmd.run:
         - name: /usr/bin/drush -l 'elife.vbox.local' -r '/opt/public/drupal-webroot' --yes pm-disable cdn
-
+        - require: 
+            - cmd: load-mysql-db
 

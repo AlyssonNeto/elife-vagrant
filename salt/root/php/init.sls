@@ -26,24 +26,27 @@ php-ini:
 
 a2enmod php5:
     cmd.run:
-        - watch_in:
-            - service: apache2
-
-enable-php-mods:
-    cmd.run:
-        - name: php5enmod curl xsl gd mysql mcrypt
         - require:
             - pkg: php-packages
         - watch_in:
             - service: apache2
 
-xdebug-config:
-    file.managed:
-        - name: /etc/php5/mods-available/xdebug.ini
-        - source: salt://system/etc-php5-mods-available-xdebug.ini
-        - template: jinja
-        - require:
-            - cmd: enable-php-mods
+# replace with manual enabling - php5enmod wasn't introduced until later
+#enable-php-mods:
+#    cmd.run:
+#        - name: php5enmod curl xsl gd mysql mcrypt
+#        - require:
+#            - pkg: php-packages
+#        - watch_in:
+#            - service: apache2
+
+#xdebug-config:
+#    file.managed:
+#        - name: /etc/php5/mods-available/xdebug.ini
+#        - source: salt://system/etc-php5-mods-available-xdebug.ini
+#        - template: jinja
+#        - require:
+#            - cmd: enable-php-mods
 
 # EXTENSIONS
 

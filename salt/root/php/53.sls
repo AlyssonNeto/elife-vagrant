@@ -7,6 +7,7 @@ php-build-dependencies:
         - pkgs:
             - libicu-dev
             - libxml2 # not sure if this is necessary of not, but it replaces xml2-config
+            - libpq-dev 
 #            - xml2-config # doesnt exist
             - libxml2-dev 
             - libbz2-dev 
@@ -53,10 +54,15 @@ init-phpbrew:
 
 compile-php-5.3:
     cmd.run: 
-        - name: phpbrew install 5.3.29 +bcmath +bz2 +calendar +cgi +cli +ctype +dom +exif +fileinfo +filter +fpm +ftp +gd +gettext +hash +iconv +icu +intl +ipc +ipv6 +json +mbregex +mbstring +mcrypt +mhash +mysql +openssl +pcntl +pcre +pdo +phar +posix +readline +session +soap +sockets +sqlite +tokenizer +xml_all +xmlrpc +zip +zlib
+        - name: phpbrew install 5.3.29 +bcmath +bz2 +calendar +cgi +cli +ctype +dom +exif +fileinfo +filter +fpm +ftp +gd +gettext +hash +iconv +icu +intl +ipc +ipv6 +json +mbregex +mbstring +mcrypt +mhash +mysql +openssl +pgsql +pcntl +pcre +pdo +phar +posix +readline +session +soap +sockets +sqlite +tokenizer +xml_all +xmlrpc +zip +zlib    
         - creates: /root/.phpbrew/php/php-5.3.29/bin/php
         - require:
             - cmd: init-phpbrew
+
+#compile-php-5.3-gd:
+#    cmd.run:
+#        - name: phpbrew ext install +gd=shared,/usr 
+
 
 post-5.3-install:
     cmd.run:

@@ -13,7 +13,8 @@ HOSTNAME = 'elife.vbox.local'
 
 # VM options
 
-VM_BOX = "ubuntu/trusty64"
+#VM_BOX = "ubuntu/trusty64"
+VM_BOX = "ubuntu/precise64"
 VM_GUI = false
 
 VM_IP = "192.168.33.44"
@@ -36,7 +37,7 @@ AWS_INSTANCE_TYPE = "m1.small"
 VPN_ENABLED = false
 FILE_CHECKS = false
 
-NFS_SHARES = true
+NFS_SHARES = false
 
 #
 # 

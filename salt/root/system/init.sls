@@ -15,17 +15,17 @@ system:
             - zip # also provides 'unzip'
             - openvpn
             - python-mysqldb
-            - phpmyadmin # not configured
             - memcached
             - elinks
             - vim
 
-    # any python requirements we want installed globally
-    # that are not available as a package
-    pip.installed:
-        - requirements: salt://system/requirements.txt
-        - require:
-            - pkg: system
+# no requirements needed at this point
+#    # any python requirements we want installed globally
+#    # that are not available as a package
+#    pip.installed:
+#        - requirements: salt://system/requirements.txt
+#        - require:
+#            - pkg: system
 
 # SSH known hosts
 
@@ -122,7 +122,7 @@ openvpn:
             - file: openvpn
     {% else %}
     service:
-        - dead
+        - disabled
     {% endif %}
 
 {% if pillar.vpn.enabled %}
