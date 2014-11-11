@@ -31,7 +31,7 @@ a2enmod php5:
         - watch_in:
             - service: apache2
 
-# replace with manual enabling - php5enmod wasn't introduced until later
+# not an issue with Ubuntu 12.04 
 #enable-php-mods:
 #    cmd.run:
 #        - name: php5enmod curl xsl gd mysql mcrypt
