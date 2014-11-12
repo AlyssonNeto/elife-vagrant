@@ -37,15 +37,11 @@ AWS_INSTANCE_TYPE = "m1.small"
 VPN_ENABLED = false
 FILE_CHECKS = true
 
-NFS_SHARES = false
+NFS_SHARES = true
 
 #
 # 
 #
-
-if not VPN_ENABLED
-  puts "[info] VPN disabled"
-end
 
 public_dir = "./public"
 
@@ -62,6 +58,8 @@ if VPN_ENABLED
     public_dir + "/ca.crt",
     public_dir + "/ta.key"
   ]
+else
+  puts "[info] VPN disabled"
 end
 
 warnings = 0
@@ -90,9 +88,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true # default: false
 
   if NFS_SHARES
+    puts "[info] NFS shares ON"
     config.vm.synced_folder public_dir, "/opt/public", id: "vagrant-root", nfs: true
     config.vm.synced_folder "../drupal-site-jnl-elife", "/shared/elife_module", id: "vagrant-elife", nfs: true
   else
+    puts "[info] NFS shares OFF"
     config.vm.synced_folder public_dir, "/opt/public", id: "vagrant-root", :owner => "www-data", :group => "www-data", :mount_options => [ "dmode=775", "fmode=664" ]
     config.vm.synced_folder "../drupal-site-jnl-elife", "/shared/elife_module", id: "vagrant-elife", :owner => "www-data", :group => "www-data", :mount_options => [ "dmode=775", "fmode=664" ]
   end
