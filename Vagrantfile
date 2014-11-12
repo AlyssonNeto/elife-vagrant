@@ -35,7 +35,7 @@ AWS_INSTANCE_TYPE = "m1.small"
 # environment options
 
 VPN_ENABLED = false
-FILE_CHECKS = false
+FILE_CHECKS = true
 
 NFS_SHARES = false
 
